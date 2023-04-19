@@ -28,6 +28,7 @@ Contributions are very welcome, as are feature requests and suggestions. Please 
 ```julia
     Dhis2.orgunit_hierarchy(base_url::AbstractString, auth_type)
     Dhis2.create_org_units(csv_file::AbstractString)
+    Dhis2.update_org_units(csv_file::AbstractString)
 ```
 
 ## Documentation

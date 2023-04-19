@@ -6,8 +6,11 @@ using DataFrames
 using CSV
 
 include("basic_authentication.jl")
+include("util.jl")
+
 export orgunit_hierarchy
 export create_org_units
+export update_org_units
 
 """
 Fetches the organizational unit hierarchy from a DHIS2 instance and returns it as a DataFrame.
@@ -74,37 +77,32 @@ https://docs.dhis2.org/en/develop/using-the-api/dhis-core-version-239/metadata.h
 function create_org_units(csv_file::AbstractString)
     credential = Credential()
     endpoint = string(credential.base_url, "/metadata")
-    df = DataFrame(CSV.File(csv_file))
-    columns = names(df)
-    payload = []
     
-    for i in 1:nrow(df)
-        dic = Dict()
-        for k in 1:length(columns)
-            df_row = df[i, :]
-            println(df_row[k])
-            key = columns[k]
-            if key == "parent"
-                dic["parent"] = Dict("id" => df_row[k])
-                continue
-            end
-            dic[columns[k]] = df_row[k]
-        end
-        push!(payload, dic)
-    end
-    print(payload)
-    p = Dict("organisationUnits" => payload)
-    data = JSON.json(p)
+    data = orgunit_creation_payload(csv_file);
     headers = authenticate(credential);
+    payload = JSON.json(Dict("organisationUnits" => data))
+
     try
-        response = HTTP.post(endpoint,headers=headers, body=data, verbose=2)
+        response = HTTP.post(endpoint,headers=headers, body=payload, verbose=2)
     catch e
         error = string("@create_org_units Exception: ", e)
     end
 end
 
-function update_org_units(base_url::AbstractString)
-    url = string(base_url, "/organisationUnits")
+function update_org_units(csv_file::AbstractString)
+    credential = Credential()
+    
+
+    headers = authenticate(credential);
+    payload = orgunit_creation_payload(csv_file);
+    
+    for p in 1:length(payload)
+        #println(payload[p]["id"])
+        endpoint = string(credential.base_url, "/organisationUnits/", payload[p]["id"])
+        #print(endpoint)
+        data = JSON.json(payload[p])
+        response = HTTP.put(endpoint,headers=headers, body=data, verbose=2)
+    end
 end
 # End of Package
 end
