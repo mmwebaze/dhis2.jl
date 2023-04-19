@@ -1,6 +1,6 @@
 # Dhis2
 
-Utility functions for [DHIS2](https://dhis2.org/).
+Utility functions for [DHIS2](https://dhis2.org/).   
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://mmwebaze.github.io/Dhis2.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://mmwebaze.github.io/Dhis2.jl/dev/)
 [![Build Status](https://github.com/mmwebaze/Dhis2.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/mmwebaze/Dhis2.jl/actions/workflows/CI.yml?query=branch%3Amain)
@@ -24,10 +24,10 @@ Contributions are very welcome, as are feature requests and suggestions. Please 
 ## Basic Usage
 
 ```julia
-Dhis2.orgunit_hierarchy(base_url::AbstractString, auth_type)
-print s
+    Dhis2.orgunit_hierarchy(base_url::AbstractString, auth_type)
+    Dhis2.create_org_units(csv_file::AbstractString)
 ```
 
 ## Documentation
 
-Detailed documentation on how to use DHIS2 API can be found [here] (https://docs.dhis2.org/en/develop/using-the-api/dhis-core-version-239/introduction.html).
+Detailed documentation on how to use DHIS2 API can be found [here](https://docs.dhis2.org/en/develop/using-the-api/dhis-core-version-239/introduction.html).
