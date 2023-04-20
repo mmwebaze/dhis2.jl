@@ -16,3 +16,12 @@ function authenticate(credential::Credential)
     header = Dict( "Authorization"=> string("BASIC ", encode_credentials), "Content-Type" => "application/json;charset=UTF-8");
     return header
 end
+
+function basic_auth(base_url, username, password)
+
+    return Credential(username, password, base_url)
+end
+
+function pat_auth(token)
+
+end

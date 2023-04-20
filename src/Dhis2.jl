@@ -9,8 +9,8 @@ include("basic_authentication.jl")
 include("util.jl")
 
 export orgunit_hierarchy
-export create_org_units
-export update_org_units
+export create_metadata
+export update_metadata
 
 """
 Fetches the organizational unit hierarchy from a DHIS2 instance and returns it as a DataFrame.
@@ -74,32 +74,50 @@ Creates organizational units using the metadata endpoint.
 csv_file: The path to the csv file containing the organisation unit information. See documentation at
 https://docs.dhis2.org/en/develop/using-the-api/dhis-core-version-239/metadata.html#webapi_csv_org_units
 """
-function create_org_units(csv_file::AbstractString)
+function create_metadata(csv_file::AbstractString, metadata_type::AbstractString)
+    local payload
     credential = Credential()
     endpoint = string(credential.base_url, "/metadata")
     
-    data = orgunit_creation_payload(csv_file);
+    data = metadata_payload(csv_file);
     headers = authenticate(credential);
-    payload = JSON.json(Dict("organisationUnits" => data))
+
+    if metadata_type == "OU"
+        payload = JSON.json(Dict("organisationUnits" => data))
+    elseif metadata_type == "DE"
+        payload = JSON.json(Dict("dataElements" => data))
+    else
+        # need to return a not supported metadata type exception/error
+    end
+    print(payload)
+   #payload = JSON.json(Dict("organisationUnits" => data))
 
     try
         response = HTTP.post(endpoint,headers=headers, body=payload, verbose=2)
     catch e
-        error = string("@create_org_units Exception: ", e)
+        error = string("@create_metadata Exception: ", e)
     end
 end
 
-function update_org_units(csv_file::AbstractString)
+function update_metadata(csv_file::AbstractString, metadata_type::AbstractString)
     credential = Credential()
-    
+    local url
 
+    if metadata_type == "OU"
+        url = string(credential.base_url, "/organisationUnits/")
+    elseif metadata_type == "DE"
+        url = string(credential.base_url, "/dataElements/")
+    else
+        # need to return a not supported metadata type exception/error
+    end
+    
     headers = authenticate(credential);
-    payload = orgunit_creation_payload(csv_file);
+    payload = metadata_payload(csv_file);
     
     for p in 1:length(payload)
         #println(payload[p]["id"])
-        endpoint = string(credential.base_url, "/organisationUnits/", payload[p]["id"])
-        #print(endpoint)
+        endpoint = string(url, payload[p]["id"])
+        print(endpoint)
         data = JSON.json(payload[p])
         response = HTTP.put(endpoint,headers=headers, body=data, verbose=2)
     end

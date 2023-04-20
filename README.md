@@ -25,10 +25,33 @@ Contributions are very welcome, as are feature requests and suggestions. Please 
 
 ## Basic Usage
 
+### Authentication
+
+To use any of the features provided by this package, authentication to a DHIS2 instance needs to provided. Currently the package supports basic authentication with the intention of implementing Personal Access Tokens (PAT) at a later point. If no authentication is provided, the package will point to the [demo](https://play.dhis2.org/) instance provided by DHIS2. There are two ways to create the authentication object:
+
+1. Configuring environment variables username, password and base_url. This is the preffered setup
+2. Directly calling Dhis2.basic_auth(base_url, username, password)
+
+### Available Features
+
 ```julia
-    Dhis2.orgunit_hierarchy(base_url::AbstractString, auth_type)
-    Dhis2.create_org_units(csv_file::AbstractString)
-    Dhis2.update_org_units(csv_file::AbstractString)
+    Dhis2.orgunit_hierarchy(base_url::AbstractString, auth_type::AbstractString) # Returns a dataframe of the entire org unit hierarchy
+    Dhis2.create_metadata(csv_file::AbstractString, metadata_type::AbstractString) # Creates Organisation Units (OU) or Data Elements (DE). The metadata_type can either be OU or DE.
+    Dhis2.update_metadata(csv_file::AbstractString, metadata_type::AbstractString) # Updates Organisation Units (OU) or Data Elements (DE). The metadata_type can either be OU or DE.
+```
+
+### Sample metadata Organisation Units & Data Elements
+
+```csv
+    name,code,parent,shortName,openingDate
+    "Central Region", CR,hgZKVly5QMe,"Central Region",2023-04-19
+    "Eastern Region", ER,hgZKVly5QMe,"Eastern Region",2023-04-19
+```
+
+```csv
+    name,id,code,shortName,description,aggregationType,valueType,domainType
+    "Women participated skill development training",,"D0001","Women participated in training",XYZ,SUM,INTEGER,AGGREGATE
+    "Women participated community organizations",,"D0002","Women participated in organizations",ABC,SUM,INTEGER,AGGREGATE
 ```
 
 ## Documentation

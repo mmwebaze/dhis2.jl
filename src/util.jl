@@ -1,6 +1,6 @@
 
 
-function orgunit_creation_payload(csv_file::AbstractString)
+function metadata_payload(csv_file::AbstractString)
     df = DataFrame(CSV.File(csv_file))
     columns = names(df)
     payload = []
