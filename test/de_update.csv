@@ -1,3 +1,3 @@
-name,id,code,shortName,description,aggregationType,valueType,domainType
-"Women participated skill development training",jZLM9Kly7SC,"D0001","Women participated in training","Women participated skill development training",SUM,INTEGER,AGGREGATE
-"Women participated community organizations",nZe7eYbmyLb,"D0002","Women participated in organizations","Women participated community organizations",SUM,INTEGER,AGGREGATE
+name,id,code,shortName,description,aggregationType,valueType,domainType,attributes
+"Women participated skill development training",jZLM9Kly7SC,"D0001","Women participated in training","Women participated skill development training",SUM,INTEGER,AGGREGATE,"kWXwL5w8Rkh:Mitch"
+"Women participated community organizations",nZe7eYbmyLb,"D0002","Women participated in organizations","Women participated community organizations",SUM,INTEGER,AGGREGATE,"kWXwL5w8Rkh:Kitts"

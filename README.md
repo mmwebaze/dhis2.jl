@@ -43,15 +43,15 @@ To use any of the features provided by this package, authentication to a DHIS2 i
 ### Sample metadata Organisation Units & Data Elements
 
 ```csv
-    name,code,parent,shortName,openingDate
-    "Central Region", CR,hgZKVly5QMe,"Central Region",2023-04-19
-    "Eastern Region", ER,hgZKVly5QMe,"Eastern Region",2023-04-19
+    name,code,parent,shortName,openingDate,attributes
+    "Central Region", CR,hgZKVly5QMe,"Central Region",2023-04-19,"g2kjpD7Dgea:CR"
+    "Eastern Region", ER,hgZKVly5QMe,"Eastern Region",2023-04-19,"g2kjpD7Dgea:ER"
 ```
 
 ```csv
-    name,id,code,shortName,description,aggregationType,valueType,domainType
-    "Women participated skill development training",,"D0001","Women participated in training",XYZ,SUM,INTEGER,AGGREGATE
-    "Women participated community organizations",,"D0002","Women participated in organizations",ABC,SUM,INTEGER,AGGREGATE
+    name,id,code,shortName,description,aggregationType,valueType,domainType,attributes
+    "Women participated skill development training",,"D0001","Women participated in training",XYZ,SUM,INTEGER,AGGREGATE,"kWXwL5w8Rkh:Wpsd"
+    "Women participated community organizations",,"D0002","Women participated in organizations",ABC,SUM,INTEGER,AGGREGATE,"kWXwL5w8Rkh:Wpco"
 ```
 
 ## Documentation

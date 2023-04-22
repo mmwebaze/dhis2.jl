@@ -89,8 +89,6 @@ function create_metadata(csv_file::AbstractString, metadata_type::AbstractString
     else
         # need to return a not supported metadata type exception/error
     end
-    print(payload)
-   #payload = JSON.json(Dict("organisationUnits" => data))
 
     try
         response = HTTP.post(endpoint,headers=headers, body=payload, verbose=2)
@@ -115,7 +113,6 @@ function update_metadata(csv_file::AbstractString, metadata_type::AbstractString
     payload = metadata_payload(csv_file);
     
     for p in 1:length(payload)
-        #println(payload[p]["id"])
         endpoint = string(url, payload[p]["id"])
         print(endpoint)
         data = JSON.json(payload[p])
