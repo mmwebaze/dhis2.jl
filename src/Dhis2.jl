@@ -6,7 +6,7 @@ using DataFrames
 using CSV
 
 include("exceptions.jl")
-include("basic_authentication.jl")
+include("authentication.jl")
 include("util.jl")
 
 export orgunit_hierarchy
