@@ -10,9 +10,16 @@ using Test
     ou_update_csv = "ou_update.csv"
     de_update_csv = "de_update.csv"
     
-    #@test orgunit_hierarchy(base_url, auth_type)
-    #@test create_metadata(ou_csv, "OU")
-    #@test create_metadata(de_csv, "DE")
+    #println(ENV)
+
+    #= Tests getting hierarchy and returns it as a dataframe =#
+    @test orgunit_hierarchy(auth_type="basic")
+
+    #= Tests OU operations create and update =#
+    @test create_metadata(ou_csv, "OU", auth_type="basic")
     @test update_metadata(ou_update_csv, "OU")
+
+    #= Tests DE operations create and update =#
+    @test create_metadata(de_csv, "DE")
     @test update_metadata(de_update_csv, "DE")
 end

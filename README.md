@@ -27,17 +27,17 @@ Contributions are very welcome, as are feature requests and suggestions. Please 
 
 ### Authentication
 
-To use any of the features provided by this package, authentication to a DHIS2 instance needs to provided. Currently the package supports basic authentication with the intention of implementing Personal Access Tokens (PAT) at a later point. If no authentication is provided, the package will point to the [demo](https://play.dhis2.org/) instance provided by DHIS2. There are two ways to create the authentication object:
+To use any of the features provided by this package, authentication to a DHIS2 instance needs to provided. Currently the package supports basic authentication with the intention of implementing Personal Access Tokens (PAT) at a later point. If no authentication is provided, it will default to basic authentication:
 
-1. Configuring environment variables username, password and base_url. This is the preffered setup
-2. Directly calling Dhis2.basic_auth(base_url, username, password)
+* Configure environment variables JDHIS2_USERNAME, JDHIS2_PASSWORD and JDHIS2_BASE_URL
+
 
 ### Available Features
 
 ```julia
-    Dhis2.orgunit_hierarchy(base_url::AbstractString, auth_type::AbstractString) # Returns a dataframe of the entire org unit hierarchy
-    Dhis2.create_metadata(csv_file::AbstractString, metadata_type::AbstractString) # Creates Organisation Units (OU) or Data Elements (DE). The metadata_type can either be OU or DE.
-    Dhis2.update_metadata(csv_file::AbstractString, metadata_type::AbstractString) # Updates Organisation Units (OU) or Data Elements (DE). The metadata_type can either be OU or DE.
+    Dhis2.orgunit_hierarchy(auth_type::AbstractString) # Returns a dataframe of the entire org unit hierarchy. The auth_type parameter takes on the valye "basic" or "pat". 
+    Dhis2.create_metadata(csv_file::AbstractString, metadata_type::AbstractString, auth_type::AbstractString) # Creates Organisation Units (OU) or Data Elements (DE). The metadata_type can either be OU or DE. The auth_type parameter takes on the valye "basic" or "pat".
+    Dhis2.update_metadata(csv_file::AbstractString, metadata_type::AbstractString, auth_type::AbstractString) # Updates Organisation Units (OU) or Data Elements (DE). The metadata_type can either be OU or DE. The auth_type parameter takes on the valye "basic" or "pat".
 ```
 
 ### Sample metadata Organisation Units & Data Elements

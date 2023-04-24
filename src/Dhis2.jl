@@ -5,6 +5,7 @@ using JSON
 using DataFrames
 using CSV
 
+include("exceptions.jl")
 include("basic_authentication.jl")
 include("util.jl")
 
@@ -18,15 +19,25 @@ Fetches the organizational unit hierarchy from a DHIS2 instance and returns it a
 base_url: The base URL of the DHIS2 instance.
 auth_type: The authentication type to use when making the request.
 """
-function orgunit_hierarchy(base_url::AbstractString, auth_type)
-    credential = Credential()
-    endpoint = string(credential.base_url, "/organisationUnits.json?paging=false&fields=id,name,displayName,level,parent[id,name]")
+function orgunit_hierarchy(;auth_type=basic)
+    local headers
+    local base_url
     
-    headers = authenticate(credential);
-
-    # Send the HTTP request and parse the response.
-    response = HTTP.request("GET", endpoint, headers=headers)
     try
+        auth = authenticate(auth_type);
+        headers = auth[1]
+        base_url = auth[2]
+    catch e
+        return -1
+    end
+
+    endpoint = string(base_url, "/organisationUnits.json?paging=false&fields=id,name,displayName,level,parent[id,name]")
+    
+    try
+        # Send the HTTP request and parse the response.
+        response = HTTP.request("GET", endpoint, headers=headers)
+        println(response.status)
+        println("KKKKK")
         org_units_found = JSON.parse(String(response.body))
 
         # Extract the organization units from the response.
@@ -74,13 +85,24 @@ Creates organizational units using the metadata endpoint.
 csv_file: The path to the csv file containing the organisation unit information. See documentation at
 https://docs.dhis2.org/en/develop/using-the-api/dhis-core-version-239/metadata.html#webapi_csv_org_units
 """
-function create_metadata(csv_file::AbstractString, metadata_type::AbstractString)
+function create_metadata(csv_file::AbstractString, metadata_type::AbstractString; auth_type="basic")
     local payload
-    credential = Credential()
-    endpoint = string(credential.base_url, "/metadata")
+    local headers
+    local base_url
+    
+    try
+        auth = authenticate(auth_type);
+        headers = auth[1]
+        base_url = auth[2]
+    catch e
+        return -1
+    end
+
+    #credential = Credential()
+    endpoint = string(base_url, "/metadata")
     
     data = metadata_payload(csv_file);
-    headers = authenticate(credential);
+    #headers = authenticate(credential);
 
     if metadata_type == "OU"
         payload = JSON.json(Dict("organisationUnits" => data))
@@ -88,6 +110,7 @@ function create_metadata(csv_file::AbstractString, metadata_type::AbstractString
         payload = JSON.json(Dict("dataElements" => data))
     else
         # need to return a not supported metadata type exception/error
+        throw(MetadataException(100, "Unsupported metadata type: $metadata_type"))
     end
 
     try
@@ -97,19 +120,30 @@ function create_metadata(csv_file::AbstractString, metadata_type::AbstractString
     end
 end
 
-function update_metadata(csv_file::AbstractString, metadata_type::AbstractString)
-    credential = Credential()
+function update_metadata(csv_file::AbstractString, metadata_type::AbstractString; auth_type="basic")
+    #credential = Credential()
     local url
+    local payload
+    local headers
+    local base_url
+    
+    try
+        auth = authenticate(auth_type);
+        headers = auth[1]
+        base_url = auth[2]
+    catch e
+        return -1
+    end
 
     if metadata_type == "OU"
-        url = string(credential.base_url, "/organisationUnits/")
+        url = string(base_url, "/organisationUnits/")
     elseif metadata_type == "DE"
-        url = string(credential.base_url, "/dataElements/")
+        url = string(base_url, "/dataElements/")
     else
-        # need to return a not supported metadata type exception/error
+        throw(MetadataException(100, "Unsupported metadata type $metadata_type"))
     end
     
-    headers = authenticate(credential);
+    #headers = authenticate(credential);
     payload = metadata_payload(csv_file);
     
     for p in 1:length(payload)

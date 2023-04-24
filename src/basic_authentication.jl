@@ -10,18 +10,48 @@ using Parameters
 end
 
 
-function authenticate(credential::Credential)
-    credentials = string(credential.username, ":", credential.password)
-    encode_credentials = Base64.base64encode(credentials)
-    header = Dict( "Authorization"=> string("BASIC ", encode_credentials), "Content-Type" => "application/json;charset=UTF-8");
-    return header
+function basic()
+    #credential = Credential(ENV["JDHIS2_USERNAME"], ENV["JDHIS2_PASSWORD"], ENV["JDHIS2_BASE_URL"])
+    try
+        credentials = string(ENV["JDHIS2_USERNAME"], ":", ENV["JDHIS2_PASSWORD"])
+        encode_credentials = Base64.base64encode(credentials)
+        header = Dict( "Authorization"=> string("BASIC ", encode_credentials), "Content-Type" => "application/json;charset=UTF-8");
+        return header, ENV["JDHIS2_BASE_URL"]
+    catch e
+        throw(e)
+    end 
 end
 
-function basic_auth(base_url, username, password)
+# function basic(base_url, username, password)
+#     credentials = string(username, ":", password)
+#     encode_credentials = Base64.base64encode(credentials)
+#     header = Dict( "Authorization"=> string("BASIC ", encode_credentials), "Content-Type" => "application/json;charset=UTF-8");
+#     return header, base_url
+# end
 
-    return Credential(username, password, base_url)
+function pat(token)
+
 end
 
-function pat_auth(token)
-
+function authenticate(auth_type)
+    # credentials = string(credential.username, ":", credential.password)
+    # encode_credentials = Base64.base64encode(credentials)
+    # header = Dict( "Authorization"=> string("BASIC ", encode_credentials), "Content-Type" => "application/json;charset=UTF-8");
+    # return header
+    local headers
+    try
+        if auth_type == "basic"
+            return basic()
+        elseif auth_type == "pat"
+            return pat()
+        else
+            # unsupport auth type exception
+            throw(AuthenticationTypeException(101, "Unsupported authentication type: $auth_type"))
+            #return -1
+        end
+    catch e
+        ex = string("Authentication Error: ", e.msg)
+        print(ex)
+        throw(e)
+    end    
 end
