@@ -12,6 +12,7 @@ include("util.jl")
 export orgunit_hierarchy
 export create_metadata
 export update_metadata
+export export_csv
 
 """
 Fetches the organizational unit hierarchy from a DHIS2 instance and returns it as a DataFrame.
@@ -151,6 +152,35 @@ function update_metadata(csv_file::AbstractString, metadata_type::AbstractString
         print(endpoint)
         data = JSON.json(payload[p])
         response = HTTP.put(endpoint,headers=headers, body=data, verbose=2)
+    end
+end
+
+function export_csv(metadata_type::String, fields::Vector{String}, export_file_name; auth_type="basic")
+    
+    try
+        url_portion = join(fields, ",")
+        auth = authenticate(auth_type);
+        headers = auth[1]
+        base_url = auth[2]
+
+        if metadata_type == "OU"
+            endpoint = string(base_url, "/organisationUnits.json?paging=false&fields=", url_portion)
+            response = HTTP.request("GET", endpoint, headers=headers)
+            return process_orgunits(response, fields, export_file_name)
+
+        elseif metadata_type == "DE"
+            endpoint = string(base_url, "/dataElements.json?paging=false&fields=", url_portion)
+            println(endpoint)
+            response = HTTP.request("GET", endpoint, headers=headers)
+            return process_data_elements(response, fields, export_file_name)
+            
+        else
+            # need to return a not supported metadata type exception/error
+            throw(MetadataException(100, "Unsupported metadata type: $metadata_type"))
+        end
+    catch e
+        println(e)
+        return -1
     end
 end
 # End of Package
