@@ -38,6 +38,7 @@ To use any of the features provided by this package, authentication to a DHIS2 i
     Dhis2.orgunit_hierarchy(auth_type::AbstractString) # Returns a dataframe of the entire org unit hierarchy. The auth_type parameter takes on the valye "basic" or "pat". 
     Dhis2.create_metadata(csv_file::AbstractString, metadata_type::AbstractString, auth_type::AbstractString) # Creates Organisation Units (OU) or Data Elements (DE). The metadata_type can either be OU or DE. The auth_type parameter takes on the valye "basic" or "pat".
     Dhis2.update_metadata(csv_file::AbstractString, metadata_type::AbstractString, auth_type::AbstractString) # Updates Organisation Units (OU) or Data Elements (DE). The metadata_type can either be OU or DE. The auth_type parameter takes on the valye "basic" or "pat".
+    Dhis2.export_csv(metadata_type::String, fields::Vector{String}, export_file_name; auth_type="basic") # Export Org Units & Data Elements to CSV. This function also returns a dataframe
 ```
 
 ### Sample metadata Organisation Units & Data Elements
