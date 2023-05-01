@@ -13,18 +13,18 @@ using Test
     #println(ENV)
 
     #= Tests getting hierarchy and returns it as a dataframe =#
-    #@test orgunit_hierarchy(auth_type="basic")
+    @test orgunit_hierarchy(auth_type="basic")[2] == 200
 
     #= Tests OU operations create and update =#
-    #@test create_metadata(ou_csv, "OU", auth_type="basic")
-    #@test update_metadata(ou_update_csv, "OU")
+    @test create_metadata("ou.csv", "OU", auth_type="basic") == 200
+    @test update_metadata("ou_update.csv", "OU") == 200
 
     #= Tests DE operations create and update =#
-    #@test create_metadata(de_csv, "DE")
-    #@test update_metadata(de_update_csv, "DE")
+    @test create_metadata("de.csv", "DE") == 200
+    @test update_metadata("de_update.csv", "DE") == 200
 
     ou_fields = ["id","name","displayName","level","parent"]
-    #@test export_csv("OU", ou_fields, "ou_exported.csv", auth_type="basic")
+    @test export_csv("OU", ou_fields, "ou_exported.csv", auth_type="basic")[2] == 200
     de_fields = ["id","name","displayName"]
-    @test export_csv("DE", de_fields, "de_exported.csv", auth_type="basic")
+    @test export_csv("DE", de_fields, "de_exported.csv", auth_type="basic")[2] == 200
 end

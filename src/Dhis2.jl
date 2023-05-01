@@ -38,7 +38,6 @@ function orgunit_hierarchy(;auth_type=basic)
         # Send the HTTP request and parse the response.
         response = HTTP.request("GET", endpoint, headers=headers)
         println(response.status)
-        println("KKKKK")
         org_units_found = JSON.parse(String(response.body))
 
         # Extract the organization units from the response.
@@ -73,7 +72,7 @@ function orgunit_hierarchy(;auth_type=basic)
 
         org_unit_df = DataFrame(uid=uids, name=names, level=levels, parent_uid=parent_uids, parent_name=parent_names)
         #print(org_unit_df)
-        return org_unit_df
+        return org_unit_df, response.status
     catch e
         error = string("Exception: ", e)
         print(error)
@@ -116,6 +115,8 @@ function create_metadata(csv_file::AbstractString, metadata_type::AbstractString
 
     try
         response = HTTP.post(endpoint,headers=headers, body=payload, verbose=2)
+        print(response.status)
+        return response.status
     catch e
         error = string("@create_metadata Exception: ", e)
     end
@@ -123,35 +124,39 @@ end
 
 function update_metadata(csv_file::AbstractString, metadata_type::AbstractString; auth_type="basic")
     #credential = Credential()
-    local url
-    local payload
-    local headers
-    local base_url
+    #local url
+    #local payload
+    #local headers
+    #local base_url
+    local response
     
     try
         auth = authenticate(auth_type);
         headers = auth[1]
         base_url = auth[2]
+
+        if metadata_type == "OU"
+            url = string(base_url, "/organisationUnits/")
+        elseif metadata_type == "DE"
+            url = string(base_url, "/dataElements/")
+        else
+            throw(MetadataException(100, "Unsupported metadata type $metadata_type"))
+        end
+
+        #headers = authenticate(credential);
+        payload = metadata_payload(csv_file);
+    
+        for p in 1:length(payload)
+            endpoint = string(url, payload[p]["id"])
+            print(endpoint)
+            data = JSON.json(payload[p])
+            response = HTTP.put(endpoint,headers=headers, body=data, verbose=2)
+            print(response.status)
+        end
+
+        return response.status
     catch e
         return -1
-    end
-
-    if metadata_type == "OU"
-        url = string(base_url, "/organisationUnits/")
-    elseif metadata_type == "DE"
-        url = string(base_url, "/dataElements/")
-    else
-        throw(MetadataException(100, "Unsupported metadata type $metadata_type"))
-    end
-    
-    #headers = authenticate(credential);
-    payload = metadata_payload(csv_file);
-    
-    for p in 1:length(payload)
-        endpoint = string(url, payload[p]["id"])
-        print(endpoint)
-        data = JSON.json(payload[p])
-        response = HTTP.put(endpoint,headers=headers, body=data, verbose=2)
     end
 end
 
@@ -166,20 +171,18 @@ function export_csv(metadata_type::String, fields::Vector{String}, export_file_n
         if metadata_type == "OU"
             endpoint = string(base_url, "/organisationUnits.json?paging=false&fields=", url_portion)
             response = HTTP.request("GET", endpoint, headers=headers)
-            return process_orgunits(response, fields, export_file_name)
+            print(response.status)
+            return process_orgunits(response, fields, export_file_name), response.status
 
         elseif metadata_type == "DE"
             endpoint = string(base_url, "/dataElements.json?paging=false&fields=", url_portion)
-            println(endpoint)
             response = HTTP.request("GET", endpoint, headers=headers)
-            return process_data_elements(response, fields, export_file_name)
-            
+            return process_data_elements(response, fields, export_file_name), response.status
         else
             # need to return a not supported metadata type exception/error
             throw(MetadataException(100, "Unsupported metadata type: $metadata_type"))
         end
     catch e
-        println(e)
         return -1
     end
 end
