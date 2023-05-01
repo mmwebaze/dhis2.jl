@@ -19,7 +19,7 @@ uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
 [[deps.Dhis2]]
 path = ".."
 uuid = "d28e51e8-2bf6-43c2-a5bc-6ab19cef4fd4"
-version = "1.0.0-DEV"
+version = "0.1.0"
 
 [[deps.DocStringExtensions]]
 deps = ["LibGit2"]
