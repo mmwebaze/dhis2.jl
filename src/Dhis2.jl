@@ -28,16 +28,11 @@ function orgunit_hierarchy(;auth_type=basic)
         auth = authenticate(auth_type);
         headers = auth[1]
         base_url = auth[2]
-    catch e
-        return -1
-    end
 
-    endpoint = string(base_url, "/organisationUnits.json?paging=false&fields=id,name,displayName,level,parent[id,name]")
+        endpoint = string(base_url, "/organisationUnits.json?paging=false&fields=id,name,displayName,level,parent[id,name]")
     
-    try
         # Send the HTTP request and parse the response.
         response = HTTP.request("GET", endpoint, headers=headers)
-        println(response.status)
         org_units_found = JSON.parse(String(response.body))
 
         # Extract the organization units from the response.
@@ -51,9 +46,8 @@ function orgunit_hierarchy(;auth_type=basic)
         levels::Vector{Int8} = []
         parent_uids::Vector{String} = []
         parent_names::Vector{String} = []
-
+    
         for ou in eachrow(org_units)
-
             org_unit = ou[1]
             push!(uids, org_unit["id"])
             push!(names, org_unit["name"])
@@ -69,18 +63,19 @@ function orgunit_hierarchy(;auth_type=basic)
             push!(parent_uids, org_unit["parent"]["id"])
             push!(parent_names, org_unit["parent"]["name"])
         end
-
+        
         org_unit_df = DataFrame(uid=uids, name=names, level=levels, parent_uid=parent_uids, parent_name=parent_names)
-        #print(org_unit_df)
+
         return org_unit_df, response.status
     catch e
         error = string("Exception: ", e)
         print(error)
+        return -1
     end
 end
 
 """
-Creates organizational units using the metadata endpoint.
+Creates organizational units and data elements using the metadata endpoint.
 
 csv_file: The path to the csv file containing the organisation unit information. See documentation at
 https://docs.dhis2.org/en/develop/using-the-api/dhis-core-version-239/metadata.html#webapi_csv_org_units
@@ -115,19 +110,16 @@ function create_metadata(csv_file::AbstractString, metadata_type::AbstractString
 
     try
         response = HTTP.post(endpoint,headers=headers, body=payload, verbose=2)
-        print(response.status)
         return response.status
     catch e
         error = string("@create_metadata Exception: ", e)
     end
 end
 
+"""
+Updates organisation units and data elements using the metadata endpoint
+"""
 function update_metadata(csv_file::AbstractString, metadata_type::AbstractString; auth_type="basic")
-    #credential = Credential()
-    #local url
-    #local payload
-    #local headers
-    #local base_url
     local response
     
     try
@@ -148,7 +140,6 @@ function update_metadata(csv_file::AbstractString, metadata_type::AbstractString
     
         for p in 1:length(payload)
             endpoint = string(url, payload[p]["id"])
-            print(endpoint)
             data = JSON.json(payload[p])
             response = HTTP.put(endpoint,headers=headers, body=data, verbose=2)
             print(response.status)
@@ -160,6 +151,9 @@ function update_metadata(csv_file::AbstractString, metadata_type::AbstractString
     end
 end
 
+"""
+Exports to CSV files organisations units and data elements.
+"""
 function export_csv(metadata_type::String, fields::Vector{String}, export_file_name; auth_type="basic")
     
     try
@@ -171,7 +165,6 @@ function export_csv(metadata_type::String, fields::Vector{String}, export_file_n
         if metadata_type == "OU"
             endpoint = string(base_url, "/organisationUnits.json?paging=false&fields=", url_portion)
             response = HTTP.request("GET", endpoint, headers=headers)
-            print(response.status)
             return process_orgunits(response, fields, export_file_name), response.status
 
         elseif metadata_type == "DE"
