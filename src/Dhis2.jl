@@ -10,8 +10,7 @@ include("authentication.jl")
 include("util.jl")
 
 export orgunit_hierarchy
-export create_metadata
-export update_metadata
+export create_metadata, update_metadata
 export export_csv
 
 """

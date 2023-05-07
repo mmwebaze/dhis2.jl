@@ -3,7 +3,9 @@ using Test
 
 @testset "Dhis2.jl" begin
 
-    base_url = "https://play.dhis2.org/2.39.1.2/api"
+    ENV["JDHIS2_BASE_URL"] = "https://play.dhis2.org/2.39.1.2/api"
+    ENV["JDHIS2_USERNAME"] = "admin"
+    ENV["JDHIS2_PASSWORD"] = "district"
     auth_type = "basic"
     ou_csv = "ou.csv"
     de_csv = "de.csv"

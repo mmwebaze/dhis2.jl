@@ -30,6 +30,7 @@ Contributions are very welcome, as are feature requests and suggestions. Please 
 To use any of the features provided by this package, authentication to a DHIS2 instance needs to provided. Currently the package supports basic authentication with the intention of implementing Personal Access Tokens (PAT) at a later point. If no authentication is provided, it will default to basic authentication:
 
 * Configure environment variables JDHIS2_USERNAME, JDHIS2_PASSWORD and JDHIS2_BASE_URL
+* The value of JDHIS2_BASE_URL should be in the form https://domain/api
 
 
 ### Available Features
